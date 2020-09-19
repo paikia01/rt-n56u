@@ -39,8 +39,8 @@ find_bin() {
 	ssr) ret="/usr/bin/ssr-redir" ;;
 	ssr-local) ret="/usr/bin/ssr-local" ;;
 	ssr-server) ret="/usr/bin/ssr-server" ;;
-	v2ray) ret="/usr/bin/v2ray" ;;
-	trojan) ret="/usr/bin/trojan" ;;
+	v2ray) ret="/tmp/v2ray" ;;
+	trojan) ret="/tmp/trojan" ;;
 	socks5) ret="/usr/bin/ipt2socks" ;;
 	esac
 	echo $ret
@@ -65,7 +65,15 @@ local type=$stype
 		sed -i 's/\\//g' $config_file
 		;;
 	trojan)
-		tj_bin="/usr/bin/trojan"
+		if [ ! -f "/tmp/trojan" ]; then
+			logger -t "SS" "trojan二进制文件下载失败，可能是地址失效或者网络异常！"
+			nvram set ss_enable=0
+			ssp_close
+		else
+			logger -t "SS" "trojan二进制文件下载成功或者已存在"
+			chmod -R 777 /tmp/trojan
+		fi
+		#tj_file=$trojan_json_file
 		if [ "$2" = "0" ]; then
 		lua /etc_ro/ss/gentrojanconfig.lua $1 nat 1080 >$trojan_json_file
 		sed -i 's/\\//g' $trojan_json_file
@@ -75,7 +83,14 @@ local type=$stype
 		fi
 		;;
 	v2ray)
-		v2_bin="/usr/bin/v2ray"
+		if [ ! -f "/tmp/v2ray" ]; then
+			logger -t "SS" "v2ray二进制文件下载失败，可能是地址失效或者网络异常！"
+			nvram set ss_enable=0
+			ssp_close
+		else
+			logger -t "SS" "v2ray二进制文件下载成功或者已存在"
+			chmod -R 777 /tmp/v2ray
+		fi
 		v2ray_enable=1
 		if [ "$2" = "1" ]; then
 		lua /etc_ro/ss/genv2config.lua $1 udp 1080 >/tmp/v2-ssr-reudp.json
@@ -97,6 +112,19 @@ get_arg_out() {
 }
 
 start_rules() {
+	local stype=$(nvram get d_type)
+	case "$stype" in
+	trojan)
+		if [ ! -f "/tmp/trojan" ];then
+			curl -k -s -o /tmp/trojan --connect-timeout 10 --retry 3 https://cdn.jsdelivr.net/gh/wangziyingwen/OutSide/trojan/trojan
+		fi
+		;;
+	v2ray)
+		if [ ! -f "/tmp/v2ray" ];then
+			curl -k -s -o /tmp/v2ray --connect-timeout 10 --retry 3 https://cdn.jsdelivr.net/gh/wangziyingwen/OutSide/v2ray/v2ray
+		fi
+		;;
+	esac
     logger -t "SS" "正在添加防火墙规则..."
 	lua /etc_ro/ss/getconfig.lua $GLOBAL_SERVER > /tmp/server.txt
 	server=`cat /tmp/server.txt` 
