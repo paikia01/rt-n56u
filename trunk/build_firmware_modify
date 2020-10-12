@@ -527,10 +527,10 @@ fi
 #	func_disable_kernel_param "CONFIG_NFS_FS"
 #fi
 ############################# CIFS ####################################
-# if [ "$CONFIG_FIRMWARE_INCLUDE_CIFS" != "y" ] ; then
-# 	func_disable_kernel_param "CONFIG_CIFS"
-# 	func_disable_busybox_param "CONFIG_FEATURE_MOUNT_CIFS"
-# fi
+if [ "$CONFIG_FIRMWARE_INCLUDE_CIFS" != "y" ] ; then
+ 	func_disable_kernel_param "CONFIG_CIFS"
+ 	func_disable_busybox_param "CONFIG_FEATURE_MOUNT_CIFS"
+fi
 # if [ "$CONFIG_FIRMWARE_INCLUDE_SMBD" != "y" ] ; then
 # 	func_disable_kernel_param "CONFIG_NETFILTER_FP_SMB"
 # fi
