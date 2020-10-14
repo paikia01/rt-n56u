@@ -22,11 +22,13 @@ clean:
 	rm -rf $(FRP_NAME).tar.gz $(FRP_NAME)
 
 romfs:
+:<<EOF
 ifeq ($(CONFIG_FIRMWARE_INCLUDE_FRPC),y)
 	$(ROMFSINST) -p +x $(THISDIR)/$(FRP_NAME)/frpc /usr/bin/frpc
 endif
 ifeq ($(CONFIG_FIRMWARE_INCLUDE_FRPS),y)
 	$(ROMFSINST) -p +x $(THISDIR)/$(FRP_NAME)/frps /usr/bin/frps
 endif
+EOF
 	$(ROMFSINST) -p +x $(THISDIR)/frp.sh /usr/bin/frp.sh
 	$(ROMFSINST) /etc_ro/frp_script.sh
