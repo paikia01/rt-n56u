@@ -150,7 +150,7 @@ config  RALINK_SYSTICK_COUNTER
 config  RALINK_CPUSLEEP
 	bool "Enable MIPS sleep mode (Dynamic CPU Frequency)"
 	depends on (RALINK_SYSTICK_COUNTER && (RALINK_MT7620 || RALINK_MT7621 || RALINK_MT7628))
-	default n
+	default y
 
 config  CLKSRC_MIPS_GIC
 	bool "Use MIPS GIC Counter (64 bit)"
